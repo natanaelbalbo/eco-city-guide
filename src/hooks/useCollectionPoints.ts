@@ -29,8 +29,23 @@ export function useCollectionPoints() {
 
       // Filtro de aberto agora
       if (filters.openNow) {
-        // Simplificação: considera apenas pontos 24h como "aberto agora"
-        if (!point.isOpen24h) return false;
+        const now = new Date();
+        const day = now.getDay(); // 0 = domingo, 6 = sábado
+        const hour = now.getHours();
+        
+        // Se estamos em um fim de semana e o ponto não funciona nos fins de semana
+        if ((day === 0 || day === 6) && !point.openOnWeekends) {
+          return false;
+        }
+        
+        // Para simplificar, consideramos apenas pontos 24h ou que ainda estejam no horário de funcionamento
+        // Essa lógica pode ser refinada para verificar horários específicos
+        if (!point.isOpen24h) {
+          // Verificação simplificada - assumindo que os pontos que não são 24h fecham às 18h
+          if (hour < 8 || hour >= 18) {
+            return false;
+          }
+        }
       }
 
       // Filtro de funciona nos fins de semana
@@ -38,9 +53,46 @@ export function useCollectionPoints() {
         return false;
       }
 
+      // Implementação básica do filtro de distância
+      // Em uma aplicação real, calcularia a distância real entre o usuário e o ponto
+      if (filters.distance !== 'all') {
+        // Como não temos a localização do usuário, essa é apenas uma simulação
+        // baseada em um ponto central de Maringá
+        const centerLat = -23.4210;
+        const centerLng = -51.9380;
+        
+        const distanceKm = calculateDistance(
+          centerLat, centerLng,
+          point.coordinates.lat, point.coordinates.lng
+        );
+        
+        const maxDistance = parseInt(filters.distance);
+        if (distanceKm > maxDistance) {
+          return false;
+        }
+      }
+
       return true;
     });
   }, [filters]);
+
+  // Função para calcular a distância em km entre dois pontos geográficos
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Raio da Terra em km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const distance = R * c; // Distância em km
+    return distance;
+  };
+
+  const deg2rad = (deg: number): number => {
+    return deg * (Math.PI/180);
+  };
 
   const toggleMaterialFilter = (material: MaterialType) => {
     setFilters(prev => {

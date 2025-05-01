@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { useCollectionPoints } from '@/hooks/useCollectionPoints';
 import { materialTypes } from '@/data/collectionPoints';
 import { Toggle } from '@/components/ui/toggle';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import {
   Select,
   SelectContent,
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import MapComponent from '@/components/map/MapComponent';
 
 const MapPage = () => {
   const {
@@ -37,86 +37,7 @@ const MapPage = () => {
         
         <div className="grid md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
-            {/* Map placeholder - Em uma aplicação real, seria um mapa interativo */}
-            <div className="relative min-h-[500px] bg-muted rounded-lg border border-border flex flex-col">
-              <div className="p-4 flex items-center justify-between bg-card border-b border-border">
-                <h2 className="text-lg font-medium">Pontos de Coleta</h2>
-                
-                <div className="flex items-center gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Filter size={16} />
-                        Filtros Rápidos
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80 p-4">
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-medium mb-2">Status</h4>
-                          <div className="flex flex-wrap gap-2">
-                            <Toggle 
-                              variant="outline" 
-                              pressed={filters.openNow}
-                              onPressedChange={toggleOpenNowFilter}
-                              className="text-xs h-8"
-                            >
-                              Aberto Agora
-                            </Toggle>
-                            <Toggle 
-                              variant="outline" 
-                              pressed={filters.openOnWeekends}
-                              onPressedChange={toggleWeekendFilter}
-                              className="text-xs h-8"
-                            >
-                              Aberto Fins de Semana
-                            </Toggle>
-                          </div>
-                        </div>
-                        <Button size="sm" variant="secondary" onClick={resetFilters}>Limpar Filtros</Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-              
-              <div className="relative flex-1 flex items-center justify-center">
-                <div className="text-center p-6">
-                  <p className="mb-4 text-lg text-muted-foreground">
-                    Mapa interativo de pontos de coleta
-                  </p>
-                  <Button className="bg-eco-green hover:bg-eco-green-dark">
-                    Carregar Mapa Interativo
-                  </Button>
-                </div>
-                
-                {/* Pins para simular marcadores no mapa */}
-                {filteredPoints.map((point, index) => {
-                  // Cálculo simples para distribuir os pontos pelo mapa
-                  const posX = 10 + (index % 4) * 25;
-                  const posY = 10 + Math.floor(index / 4) * 25;
-                  
-                  return (
-                    <div 
-                      key={point.id}
-                      className="absolute cursor-pointer hover:z-10"
-                      style={{ 
-                        left: `${posX}%`, 
-                        top: `${posY}%` 
-                      }}
-                    >
-                      <div className="relative group">
-                        <MapPin className="h-8 w-8 text-eco-green" />
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-white p-2 rounded-md shadow-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          <p className="font-bold">{point.name}</p>
-                          <p>{point.address}</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <MapComponent points={filteredPoints} />
           </div>
           
           <div className="space-y-6">
@@ -230,7 +151,7 @@ const MapPage = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="bg-eco-green-light text-eco-green-dark rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">3</span>
-                    <span>Clique nos pontos do mapa para ver detalhes e direções</span>
+                    <span>Clique nos pontos do mapa para ver mais informações</span>
                   </li>
                 </ul>
               </CardContent>
@@ -239,7 +160,7 @@ const MapPage = () => {
         </div>
         
         <div className="mt-10 space-y-4">
-          <h2 className="text-2xl font-bold">Pontos de Coleta</h2>
+          <h2 className="text-2xl font-bold">Lista de Pontos de Coleta</h2>
           
           <div className="grid md:grid-cols-2 gap-4">
             {filteredPoints.map((point) => (
@@ -261,7 +182,13 @@ const MapPage = () => {
                     </div>
                   </div>
                   
-                  <Button variant="outline" className="w-full">Ver Detalhes</Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${point.coordinates.lat},${point.coordinates.lng}`, '_blank')}
+                  >
+                    Ver no Mapa
+                  </Button>
                 </CardContent>
               </Card>
             ))}
