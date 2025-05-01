@@ -27,7 +27,7 @@ interface MapComponentProps {
 // Componente de mapa usando react-leaflet
 const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
   const [selectedPoint, setSelectedPoint] = useState<CollectionPoint | null>(null);
-  const maringaCenter = [-23.4210, -51.9380]; // Coordenadas centrais de Maringá
+  const maringaCenter: [number, number] = [-23.4210, -51.9380]; // Coordenadas centrais de Maringá
   
   return (
     <div className="relative min-h-[500px] bg-muted rounded-lg border border-border flex flex-col">
@@ -37,7 +37,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
       
       <div className="flex-1">
         <MapContainer 
-          center={maringaCenter as [number, number]} 
+          center={maringaCenter}
           zoom={13} 
           style={{ height: '100%', width: '100%' }}
         >
