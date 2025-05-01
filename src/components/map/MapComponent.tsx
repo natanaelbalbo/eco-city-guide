@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { CollectionPoint } from '@/data/collectionPoints';
 import { Button } from '../ui/button';
 import 'leaflet/dist/leaflet.css';
@@ -20,17 +20,11 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Componente para centralizar o mapa em um ponto quando selecionado
-const FlyToPoint = ({ center }) => {
-  const map = useMap();
-  map.flyTo(center, 16, { duration: 0.5 });
-  return null;
-};
-
 interface MapComponentProps {
   points: CollectionPoint[];
 }
 
+// Componente de mapa usando react-leaflet
 const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
   const [selectedPoint, setSelectedPoint] = useState<CollectionPoint | null>(null);
   const maringaCenter = [-23.4210, -51.9380]; // Coordenadas centrais de Maringá
@@ -43,11 +37,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
       
       <div className="flex-1">
         <MapContainer 
-          center={maringaCenter} 
+          center={[maringaCenter[0], maringaCenter[1]]} 
           zoom={13} 
           style={{ height: '100%', width: '100%' }}
-          attributionControl={true}
-          zoomControl={true}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -72,10 +64,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
               </Popup>
             </Marker>
           ))}
-          
-          {selectedPoint && (
-            <FlyToPoint center={[selectedPoint.coordinates.lat, selectedPoint.coordinates.lng]} />
-          )}
         </MapContainer>
       </div>
       
