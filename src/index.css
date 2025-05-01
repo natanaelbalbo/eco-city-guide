@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,4 +80,22 @@
   .eco-gradient {
     @apply bg-gradient-to-br from-eco-green-light via-white to-eco-blue/10;
   }
+}
+
+/* Mapbox specific styles */
+.mapboxgl-map {
+  font-family: inherit;
+}
+
+.mapboxgl-ctrl-logo {
+  margin: 0 !important;
+}
+
+.mapboxgl-popup-content {
+  padding: 15px !important;
+  border-radius: 8px !important;
+}
+
+.custom-marker {
+  cursor: pointer;
 }
