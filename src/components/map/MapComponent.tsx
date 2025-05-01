@@ -37,7 +37,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
       
       <div className="flex-1">
         <MapContainer 
-          center={[maringaCenter[0], maringaCenter[1]]} 
+          center={maringaCenter as [number, number]} 
           zoom={13} 
           style={{ height: '100%', width: '100%' }}
         >
